@@ -15,13 +15,13 @@ namespace DatingApp.API.Data
 
         public async Task<User> Login(string username, string password)
         {
-            var user = await _context.Users.FirstOrDefaultAsync(x => x.Username == username);
+            var user = await _context.Users.Include(p => p.Photos).FirstOrDefaultAsync(x => x.UserName == username);
 
             if(user == null)
                 return null;
 
-            if(!VerifyPasswordHash(password, user.PasswordHash, user.PasswordSalt))
-                return null;
+            // if(!VerifyPasswordHash(password, user.PasswordHash, user.PasswordSalt))
+            //     return null;
 
             return user;
         }
@@ -49,8 +49,8 @@ namespace DatingApp.API.Data
             byte[] passwordHash, passwordSalt;  //Khai báo hai biến có kiểu là một mảng byte
             CreatePasswordHash(password, out passwordHash, out passwordSalt);   //Truyền hai biến trên vào hàm CreatePasswordHash. từ khóa out sẽ nhận giá trị vào sau đó reset giá trị và lưu giữ giá trị khi ra khỏi hàm.
 
-            user.PasswordHash = passwordHash;
-            user.PasswordSalt = passwordSalt;
+            // user.PasswordHash = passwordHash;
+            // user.PasswordSalt = passwordSalt;
 
             await _context.Users.AddAsync(user);    //Thêm bất đồng bộ value user vào entity Users
             await _context.SaveChangesAsync();  //Lưu
@@ -73,7 +73,7 @@ namespace DatingApp.API.Data
         //UserExists có một tham số username thực hiện việc kiểm tra xem có bất cứ row nào trong entity Users hay không.
         public async Task<bool> UserExists(string username)
         {
-            if (await _context.Users.AnyAsync(x => x.Username == username))
+            if (await _context.Users.AnyAsync(x => x.UserName == username))
                 return true;
 
             return false;

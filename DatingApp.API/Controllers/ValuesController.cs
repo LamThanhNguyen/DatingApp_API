@@ -9,7 +9,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace DatingApp.API.Controllers
 {
-    [Authorize] // Chỗ này chúng ta thiết lập Authorize (tức là cần có quyền hạn tương ứng mới được phép truy cập vào)
+    // [Authorize] // Chỗ này chúng ta thiết lập Authorize (tức là cần có quyền hạn tương ứng mới được phép truy cập vào)
     [Route("api/[controller]")]
     [ApiController]
     public class ValuesController : ControllerBase
@@ -21,14 +21,14 @@ namespace DatingApp.API.Controllers
             _context = context;
         }
         
-        [AllowAnonymous]
+        [Authorize(Roles = "Admin, Moderator")]
         [HttpGet]
         public async Task<IActionResult> GetValues()
         {
             var values = await _context.Values.ToListAsync();  //Lấy tất cả row của entity Values từ DataContext
             return Ok(values);
         }
-        [AllowAnonymous]    // Chỗ này chúng ta thiết lập AllowAnonymous cho nên chúng ta có thể truy cập vào mà không cần có Quyền hạn tương ứng.
+        [Authorize(Roles = "Member")]    // Chỗ này chúng ta thiết lập AllowAnonymous cho nên chúng ta có thể truy cập vào mà không cần có Quyền hạn tương ứng.
         [HttpGet("{id}")]
         public async Task<ActionResult> GetValue(int id)
         {
